@@ -12,14 +12,14 @@ public class Usuario {
     private String _id;
     private String seudonimo;
     private String correo;
-    private String contraseña;
+    private String contrasena;
     @DBRef
     private Rol rol;
 
-    public Usuario(String seudonimo, String correo, String contraseña) {
+    public Usuario(String seudonimo, String correo, String contrasena) {
         this.seudonimo = seudonimo;
         this.correo = correo;
-        this.contraseña = contraseña;
+        this.contrasena = contrasena;
     }
 
     public String get_id() {
@@ -42,8 +42,8 @@ public class Usuario {
         this.correo = correo;
     }
 
-    public String getContraseña() {
-        return contraseña;
+    public String getContrasena() {
+        return contrasena;
     }
 
     public Rol getRol() {
@@ -53,7 +53,7 @@ public class Usuario {
         this.rol = rol;
     }
 
-    public void setContraseña(String contraseña) {
-        this.contraseña = contraseña;
+    public void setContrasena(String contrasena) {
+        this.contrasena = contrasena;
     }
 }

@@ -6,6 +6,9 @@ import RegistraduriaVotaciones.seguridadBE.Respositorios.RepositorioUsuario;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.List;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -42,7 +45,7 @@ public class ControladorUsuario {
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
     public Usuario create(@RequestBody Usuario infoUsuario){
-        infoUsuario.setContraseña(convertirSHA256(infoUsuario.getContraseña()));
+        infoUsuario.setContrasena(convertirSHA256(infoUsuario.getContrasena()));
         Rol rolVotante=this.miRepositorioRol.findById("63725a526ee0d975568359aa").orElse(null);//llamamos al rol votante el cual ya esta creado en la base de datos
         infoUsuario.setRol(rolVotante);//Dar roll de votante por default a todos los usuarios
         return this.miRepositorioUsuario.save(infoUsuario);
@@ -62,7 +65,7 @@ public class ControladorUsuario {
         if (usuarioActual!=null){
             usuarioActual.setSeudonimo(infoUsuario.getSeudonimo());
             usuarioActual.setCorreo(infoUsuario.getCorreo());
-            usuarioActual.setContraseña(convertirSHA256(infoUsuario.getContraseña()));
+            usuarioActual.setContrasena(convertirSHA256(infoUsuario.getContrasena()));
             return this.miRepositorioUsuario.save(usuarioActual);
         }else {
             return null;
@@ -102,4 +105,16 @@ public class ControladorUsuario {
     }
     /** ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////  */
 
+    @PostMapping("/validar")
+    public Usuario validate(@RequestBody Usuario infoUsuario, final HttpServletResponse response) throws IOException {
+        Usuario usuarioActual=this.miRepositorioUsuario
+                .getUserByEmail(infoUsuario.getCorreo());
+        if (usuarioActual!=null && usuarioActual.getContrasena().equals(convertirSHA256(infoUsuario.getContrasena()))) {
+            usuarioActual.setContrasena("");
+            return usuarioActual;
+        }else{
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+            return null;
+        }
+    }
 }
